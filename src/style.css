@@ -1,0 +1,32 @@
+body {
+    color: white;
+    font-family: inherit;
+    background-color: #1c1c1c;
+}
+
+
+button {
+    color: white;
+    font-family: inherit;
+    background-color: #474547;
+
+    width: 250px;
+    height: 50px;
+    margin: 10px;           /* space around the element */
+    font-size: 30px;
+    border-radius: 15px;
+}
+
+
+.main-box {
+    height: 98vh;               /* vh : viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;    /* along the main axis (column) */
+}
+
+
+.main-title {
+    font-size: 80px;
+}

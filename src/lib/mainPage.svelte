@@ -1,14 +1,19 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import '../style.css';
-    import MainPage from '../lib/mainPage.svelte'
+    
 </script>
 
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<MainPage />
+<div class='main-box'>
+    <p class='main-title'>FaLenCo</p>
+
+    <button>Accedi</button>
+    <button>Registrati</button>
+    <button>Crea famiglia</button>
+</div>
 
 
 <!-- CSS section
