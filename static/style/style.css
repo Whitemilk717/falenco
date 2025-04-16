@@ -12,11 +12,14 @@ button {
     font-family: inherit;
     background-color: #474547;
 
-    width: 250px;
-    height: 50px;
-    margin: 10px;           /* space around the element */
-    font-size: 30px;
+    width: 15vw;
+    height: 7vh;
+    margin: 10px;                   /* space around the element */
+    font-size: calc(1vw + 1vh);
     border-radius: 15px;
+
+    min-width: 40px;
+    min-height: 30px;
 }
 
 
@@ -30,5 +33,5 @@ button {
 
 
 .main-title {
-    font-size: 80px;
+    font-size: calc(6vw + 6vh);
 }

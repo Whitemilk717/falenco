@@ -1,19 +1,12 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    // import '../style.css';
+    let { children } = $props();
 </script>
 
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div>
-    Offline!
-</div>
+<link rel='stylesheet' href='/style/style.css'>
 
-
-<!-- CSS section
------------------------------------------------------------- -->
-<style>
-    
-</style>
+{@render children()}

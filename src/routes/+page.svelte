@@ -1,8 +1,6 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import '../style.css';
-
     if ('serviceWorker' in navigator) {                                             // true: the browser supports service workers
         navigator.serviceWorker
             .register('/service-worker.js', { type: 'module' })                     // 'type: module' is required for manual service workers
@@ -19,16 +17,9 @@
 <!-- HTML section 
 ------------------------------------------------------------ -->
 <div class='main-box'>
-    <p class='main-title'>FaLenCo</p>
+    <h1 class='main-title'>FaLenCo</h1>
 
     <button>Accedi</button>
     <button>Registrati</button>
     <button>Crea famiglia</button>
 </div>
-
-
-<!-- CSS section
------------------------------------------------------------- -->
-<style>
-    
-</style>
