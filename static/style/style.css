@@ -1,37 +1,39 @@
 body {
     color: white;
     font-family: inherit;
-    background-color: #1c1c1c;
     
     margin: 0;
+    background-color: #1c1c1c;
 }
 
-
-button {
-    color: white;
-    font-family: inherit;
-    background-color: #474547;
-
-    width: 15vw;
-    height: 7vh;
-    margin: 10px;                   /* space around the element */
-    font-size: calc(1vw + 1vh);
-    border-radius: 15px;
-
-    min-width: 40px;
-    min-height: 30px;
-}
-
-
+/* Login, registration and family creation section
+------------------------------------------------------------ */
 .main-box {
-    height: 100vh;               /* vh : viewport height */
+    height: 100vh;
+    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;    /* along the main axis (column) */
 }
 
-
 .main-title {
-    font-size: calc(6vw + 6vh);
+    font-size: calc(5vw + 5vh);
+
+    margin: calc(0.2vw + 0.2vh);
+}
+
+.main-input {
+    color: white;
+    font-family: inherit;
+    font-size: calc(0.8vw + 0.8vh);
+    
+    width: 20vw;                    /* vw : viewport width */
+    height: 5vh;                    /* vh : viewport height */
+    margin: calc(0.2vw + 0.2vh);
+    border: none;
+    padding-left: 1em;
+    padding-right: 1em;
+    border-radius: 15px;
+    background-color: #474547;
 }
