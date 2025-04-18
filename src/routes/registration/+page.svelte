@@ -1,7 +1,32 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { goto } from '$app/navigation';
+    import { goto } from "$app/navigation";
+    import { auth } from "$lib/firebase";
+    import { createUserWithEmailAndPassword } from "firebase/auth";
+
+    // input declarations
+    let email = "";
+    let password = "";
+
+    // user creation
+    function userCreation() {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                goto("/");
+            })
+            .catch((error) => {
+                if(error.code === "auth/weak-password") {
+                    alert("La password dovrebbe essere lunga almeno 6 caratteri. Riprova!")
+                }
+                else if(error.code === "auth/email-already-in-use") {
+                    alert("La mail è già in uso. Riprova!")
+                }
+                else {
+                    console.error(error);
+                }
+            })
+    }
 </script>
 
 
@@ -10,14 +35,12 @@
 <form class="main-box">
     <h1 class="main-title">FaLenCo</h1>
     
-    <input class="main-input" type="text" placeholder="Nome" required><br>
-    <input class="main-input" type="text" placeholder="Cognome" required><br>
-    <input class="main-input" type="text" placeholder="Email" required><br>
-    <input class="main-input" type="text" placeholder="Password" required><br>
+    <input class="main-input" type="email" bind:value={email} placeholder="Email" required><br>
+    <input class="main-input" type="password" bind:value={password} placeholder="Password" required><br>
 
     <div class="inline-buttons">
-        <button class="cancel-button" onclick={ () => goto('/') }>Annulla</button>
-        <button class="registration-button">Registrati</button>
+        <button type="button" class="cancel-button" onclick={ () => goto('/') }>Annulla</button>
+        <button type="button" class="registration-button" onclick={ () => userCreation() }>Registrati</button>
     </div>
 </form>
 

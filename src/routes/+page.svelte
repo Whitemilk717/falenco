@@ -2,7 +2,9 @@
 ------------------------------------------------------------ -->
 <script>
     import { goto } from "$app/navigation";
+    import { auth } from "$lib/firebase";
 
+    // service worker registration
     if ("serviceWorker" in navigator) {                                             // true: the browser supports service workers
         navigator.serviceWorker
             .register("/service-worker.js", { type: "module" })                     // "type: module" is required for manual service workers
@@ -13,6 +15,13 @@
                 console.error("Error registering the Service Worker: ", error);
             })
     }
+
+    // input declarations
+    let email = "";
+    let password = "";
+    let family = "";
+
+    
 </script>
 
 
@@ -21,14 +30,14 @@
 <form class="main-box">
     <h1 class="main-title">FaLenCo</h1>
 
-    <input class="main-input" type="text" placeholder="Email" required><br>
-    <input class="main-input" type="text" placeholder="Password" required><br>
-    <input class="main-input" type="text" placeholder="Nome famiglia" required><br>
+    <input class="main-input" type="email" bind:value={email} placeholder="Email" required><br>
+    <input class="main-input" type="password" bind:value={password} placeholder="Password" required><br>
+    <input class="main-input" type="text" bind:value={family} placeholder="Nome famiglia" required><br>
 
     <button class="access-button" onclick={ () => goto("/calendar") }>Accedi</button>
 
     <span>Prima volta? 
-        <a class="link" href="/registration">Creane un account</a> 
+        <a class="link" href="/registration">Crea un account</a> 
         oppure 
         <a class="link" href="/family-creation">crea un gruppo famiglia</a>
     </span>
