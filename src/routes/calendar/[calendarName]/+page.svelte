@@ -1,7 +1,10 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import Header from '$lib/Header.svelte';
+    import { page } from "$app/state";
+    import Header from "$lib/Header.svelte";
+
+    const calendarName = page.params.calendarName;
 </script>
 
 
@@ -11,6 +14,8 @@
     <Header />
 
     <div class="app-grid-menu">
+        {calendarName}
+        <br>
         Menu
     </div>
     

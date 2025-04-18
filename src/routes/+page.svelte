@@ -3,6 +3,7 @@
 <script>
     import { goto } from "$app/navigation";
     import { auth } from "$lib/firebase";
+    import { signInWithEmailAndPassword } from "firebase/auth";
 
     // service worker registration
     if ("serviceWorker" in navigator) {                                             // true: the browser supports service workers
@@ -16,58 +17,38 @@
             })
     }
 
-    // input declarations
+    // sign in function
     let email = "";
     let password = "";
-    let family = "";
 
-    
+    function signIn() {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                goto("/calendar-selection");
+            })
+            .catch((error) => {
+                if (error.code === "auth/invalid-credential") {
+                    alert("Email e/o password errati. Riprovare!");
+                    email = "";
+                    password = "";
+                }
+                else {
+                    console.log(error);
+                }
+            })
+    }
 </script>
 
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<form class="main-box">
+<form class="main-box" onsubmit={ () => signIn() }>
     <h1 class="main-title">FaLenCo</h1>
 
     <input class="main-input" type="email" bind:value={email} placeholder="Email" required><br>
     <input class="main-input" type="password" bind:value={password} placeholder="Password" required><br>
-    <input class="main-input" type="text" bind:value={family} placeholder="Nome famiglia" required><br>
 
-    <button class="access-button" onclick={ () => goto("/calendar") }>Accedi</button>
+    <button type="submit" class="big-green-button">Accedi</button>
 
-    <span>Prima volta? 
-        <a class="link" href="/registration">Crea un account</a> 
-        oppure 
-        <a class="link" href="/family-creation">crea un gruppo famiglia</a>
-    </span>
+    <p class="first-time">Prima volta? <a class="link" href="/registration">Crea un account</a></p>
 </form>
-
-
-<!-- CSS section 
------------------------------------------------------------- -->
-<style>    
-    .access-button {
-        color: white;
-        font-family: inherit;
-        font-size: calc(0.8vw + 0.8vh);
-        
-        width: 15vw;
-        min-width: 20px;
-        height: 7vh;
-        min-height: 10px;
-        margin: calc(0.2vw + 0.2vh);
-        border-radius: 15px;
-        background-color: #008A5A;
-    }
-    
-    span {
-        font-size: calc(0.5vw + 0.5vh);
-    
-        margin: calc(0.2vw + 0.2vh);
-    }
-    
-    .link {
-        color: aqua;
-    }
-</style>

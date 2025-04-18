@@ -6,7 +6,7 @@ body {
     background-color: #1c1c1c;
 }
 
-/* Login, registration and family creation section
+/* Login, registration and calendar creation section
 ------------------------------------------------------------ */
 .main-box {
     height: 100vh;
@@ -36,4 +36,61 @@ body {
     padding-right: 1em;
     border-radius: 15px;
     background-color: #474547;
+}
+
+.big-green-button {
+    color: white;
+    font-family: inherit;
+    font-size: calc(0.8vw + 0.8vh);
+    
+    width: 15vw;
+    min-width: 20px;
+    height: 7vh;
+    min-height: 10px;
+    margin: calc(0.2vw + 0.2vh);
+    border-radius: 15px;
+    background-color: #008A5A;
+}
+
+.link {
+    color: aqua;
+}
+
+.first-time {
+    font-size: calc(0.5vw + 0.5vh);
+
+    margin: calc(0.2vw + 0.2vh);
+}
+
+.inline-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.small-red-button {
+    color: white;
+    font-family: inherit;
+    font-size: calc(0.8vw + 0.8vh);
+    
+    width: 10vw;
+    min-width: 20px;
+    height: 7vh;
+    min-height: 10px;
+    margin: calc(0.2vw + 0.2vh);
+    border-radius: 15px;
+    background-color: #7A0000;
+}
+
+.small-green-button {
+    color: white;
+    font-family: inherit;
+    font-size: calc(0.8vw + 0.8vh);
+    
+    width: 10vw;
+    min-width: 20px;
+    height: 7vh;
+    min-height: 10px;
+    margin: calc(0.2vw + 0.2vh);
+    border-radius: 15px;
+    background-color: #008A5A;
 }
