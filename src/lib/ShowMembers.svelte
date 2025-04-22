@@ -18,7 +18,7 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-{#await getMembers() then members}
+{#await getMembers() then members}  <!-- members is the result of getMembers -->
     <ul>
         {#each members as member}
             <li>{member}</li>

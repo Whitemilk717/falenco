@@ -3,7 +3,7 @@
 <script>
     import { goto } from "$app/navigation";
     import { auth, db } from "$lib/firebase";
-    import { signOut } from "firebase/auth";
+    import { disconnect } from "$lib/disconnect.js";
     import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
     let calendarName;
@@ -32,16 +32,6 @@
 
         goto(`/calendar/${calendarName}`);
     }
-
-    function disconnect() {
-        signOut(auth)
-            .then(() => {
-                goto("/");
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-    }
 </script>
 
 
@@ -65,13 +55,3 @@
 
     <p class="first-time">Prima volta? <a class="link" href="/calendar-creation">Crea un calendario</a></p>
 </form>
-
-
-<!-- CSS section 
------------------------------------------------------------- -->
-<style>
-    .welcome-text {
-        font-size: calc(0.8vw + 0.8vh);
-        text-align: center;
-    }
-</style>
