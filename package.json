@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"-": "^0.0.1",
+		"@event-calendar/core": "^4.0.2",
 		"firebase": "^11.6.0"
 	}
 }

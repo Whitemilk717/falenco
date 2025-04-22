@@ -10,7 +10,7 @@
 <div class="app-grid-header">
     <h1>FaLenCo</h1>
 
-    <div class="header-buttons-box">
+    <div>
         <button class="header-button" onclick={ () => console.log('Click') }>
             <img src="/icons/shopping-cart.png" alt="shopping cart icon">
         </button>
@@ -42,15 +42,8 @@
         padding: 10px 20px 10px 20px;
     }
 
-    .header-buttons-box {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
     .header-button {
-        background-color: #191919;
+        background-color: #474545;
 
         border-radius: 50px;
     }
