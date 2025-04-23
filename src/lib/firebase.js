@@ -1,6 +1,8 @@
-import { initializeApp } from "firebase/app";
+import { goto } from "$app/navigation";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"
+import { signOut } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDdNm8a4njArh57lYEYKZWyyzkib6wmRmk",
@@ -15,4 +17,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db };
+
+function disconnect() {
+    signOut(auth)
+        .then(() => {
+            goto("/");
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+
+export { app, auth, db, disconnect };

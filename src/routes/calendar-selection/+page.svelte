@@ -2,35 +2,39 @@
 ------------------------------------------------------------ -->
 <script>
     import { goto } from "$app/navigation";
-    import { auth, db } from "$lib/firebase";
-    import { disconnect } from "$lib/disconnect.js";
-    import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+    import { auth, db, disconnect } from "$lib/firebase.js";
+    import { updateDoc, arrayUnion, query, where, collection, getDocs } from "firebase/firestore";
 
     let calendarName;
 
     async function checkCalendar() {
-        const insertedDoc = doc(db, "calendars", calendarName);
-        const storedDoc = await getDoc(insertedDoc);
 
-        if (!storedDoc.exists()) {
+        const q = query(
+            collection(db, "calendars"),
+            where("name", "==", calendarName)
+        );
+        const queryResult = await getDocs(q);
+
+        if (queryResult.empty) {
             alert("Questo calendario non esiste, riprova!");
             return;
         }
 
-        const calendarData = storedDoc.data();
-        
+        const calendarData = queryResult.docs[0].data();    // calendar names are unique
+
         if (!calendarData.members.includes(auth.currentUser.email)) {
             if (calendarData.membersNumber === calendarData.members.length) {
                 alert("Il calendario ha raggiunto il massimo numero di membri");
+                calendarName = "";
                 return;
             }
         }
 
-        await updateDoc(insertedDoc,{ 
-            members: arrayUnion(auth.currentUser.email)
+        await updateDoc(queryResult.docs[0].ref, { 
+            members: arrayUnion(auth.currentUser.email)     // added to user members
         });
 
-        goto(`/calendar/${calendarName}`);
+        goto(`/calendar/${queryResult.docs[0].id}`);
     }
 </script>
 

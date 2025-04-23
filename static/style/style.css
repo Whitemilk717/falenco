@@ -36,7 +36,7 @@ body {
     padding-left: 1em;
     padding-right: 1em;
     border-radius: 15px;
-    background-color: #474547;
+    background-color: #474545;
 }
 
 .big-green-button {
@@ -118,6 +118,9 @@ body {
     grid-template-columns: repeat(6, 1fr);
 }
 
+
+/* calendar section, calendar
+------------------------------------------------------------ */
 .calendar-box {
     background-color: #131314;
 
@@ -129,6 +132,9 @@ body {
     overflow: auto;
 }
 
+
+/* calendar section, header
+------------------------------------------------------------ */
 .header-box {
     background-color: #191919;
 
@@ -152,6 +158,9 @@ body {
     border-radius: 50px;
 }
 
+
+/* calendar section, menu
+------------------------------------------------------------ */
 .menu-box {
     background-color: #1C1C1C;
 
@@ -170,7 +179,6 @@ body {
 .menu-buttons-box {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
 
     gap: 5px;
 }
@@ -196,5 +204,21 @@ body {
     background-color: #008A5A;
 
     height: 5vh;
+    border-radius: 50px;
+}
+
+.menu-input-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-input {
+    color: white;
+    background-color: #474545;
+
+    height: 5vh;
+    border: none;
+    padding-left: 1em;
+    padding-right: 1em;
     border-radius: 50px;
 }
