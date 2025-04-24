@@ -51,7 +51,7 @@
         {#if calendarState === 0}
             <DefaultMenu 
                 setCalendarState={setCalendarState} 
-                calendarId={calendarId} 
+                calendarId={calendarId}
             />
         
         <!-- 1: shopping list
@@ -59,6 +59,7 @@
         {:else if calendarState === 1}
             <ShoppingList
                 setCalendarState={setCalendarState}
+                calendarId={calendarId}
             />
         
         <!-- 2: add event

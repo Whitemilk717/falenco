@@ -28,7 +28,7 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div>
+<div class="menu-div">
     <p>Modifica password:<p>
     <form class="menu-input-box" id="edit-password-form" onsubmit={ () => changePassword() }>
         <input class="menu-input" type="password" bind:value={newPassword} placeholder="Nuova password" required><br>

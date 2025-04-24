@@ -28,7 +28,8 @@
             { 
                 name: calendarName, 
                 maxMembersNumber: maxMembersNumber, 
-                members: [auth.currentUser.email]
+                members: [auth.currentUser.email],
+                shoppingList: []
             }
         );
 

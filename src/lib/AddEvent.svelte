@@ -7,7 +7,7 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div>
+<div class="menu-div">
     <p>Nuovo evento<p>
 </div>
 

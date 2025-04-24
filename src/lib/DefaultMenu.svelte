@@ -17,7 +17,7 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div>
+<div class="menu-div">
     <p>Membri:</p>
     <ul>
         {#each members as member}

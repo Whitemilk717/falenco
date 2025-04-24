@@ -37,7 +37,7 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div>
+<div class="menu-div">
     <p>Modifica calendario:<p>
     <form class="menu-input-box" id="edit-calendar-form" onsubmit={() => editCalendar()}>
         <input class="menu-input" type="text" bind:value={newCalendarName} placeholder="Nuovo nome" required><br>
