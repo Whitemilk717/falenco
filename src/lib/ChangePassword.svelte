@@ -10,7 +10,7 @@
     function changePassword() {
         updatePassword(auth.currentUser, newPassword)
             .then(() => {
-                props.setCalendarState(0);
+                props.setMenuState(0);
                 alert("Password aggiornata con successo!");
             })
             .catch((error) => {
@@ -37,5 +37,5 @@
 
 <div class="menu-buttons-box">
     <button class="menu-green-button" type="submit" form="edit-password-form">Salva</button>
-    <button class="menu-red-button" onclick={ () => props.setCalendarState(0) }>Annulla</button>
+    <button class="menu-red-button" onclick={ () => props.setMenuState(0) }>Annulla</button>
 </div>

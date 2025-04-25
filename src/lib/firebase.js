@@ -17,8 +17,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let unsubs = [];    // array containing all firestore subscriptions
+
+function addUnsub(unsub) {
+    unsubs.push(unsub);
+}
 
 function disconnect() {
+    unsubs.forEach(unsub => {
+        unsub();
+    });
+
     signOut(auth)
         .then(() => {
             goto("/");
@@ -28,4 +37,4 @@ function disconnect() {
         })
 }
 
-export { app, auth, db, disconnect };
+export { app, auth, db, disconnect, addUnsub };

@@ -2,6 +2,7 @@
 ------------------------------------------------------------ -->
 <script>
     import { page } from "$app/state";
+    import { db, addUnsub } from "$lib/firebase.js"
     import { goto } from "$app/navigation";
     import Header from "$lib/Header.svelte";
     import AddEvent from "$lib/AddEvent.svelte";
@@ -10,23 +11,36 @@
     import EditCalendar from "$lib/EditCalendar.svelte";
     import ChangePassword from "$lib/ChangePassword.svelte";
     import { Calendar, TimeGrid } from "@event-calendar/core";
+    import { doc, onSnapshot } from "firebase/firestore";
 
 
-    let calendarState = $state(0);                      // determines what the menu shows
+    let menuState = $state(0);                      // determines what the menu shows
+    let events = $state("");
     let calendarId = $state(page.params.calendarId);
+    const docRef = doc(db, "calendars", calendarId);
 
-    /* calendar options
+    /* calendar options and component instance
     -------------------------------------------------------- */
-    let ec = $state();
+    let calendar = $state();
     let options = $state({
         view: "timeGridWeek",
         events: []
     });
 
-    /* function to change calendarState
+    /* firestore event synchronization
     -------------------------------------------------------- */
-    function setCalendarState(newState) {
-        calendarState = newState;
+    const unsub = onSnapshot(
+        docRef,
+        (doc) => {
+            options.events = doc.data().events;
+        }
+    );
+    addUnsub(unsub);
+
+    /* function to change menuState
+    -------------------------------------------------------- */
+    function setMenuState(newState) {
+        menuState = newState;
     }
 </script>
 
@@ -39,7 +53,7 @@
     -------------------------------------------------------- -->
     <Header 
         calendarId={calendarId} 
-        setCalendarState={setCalendarState}
+        setMenuState={setMenuState}
     />
 
     <!-- menu 
@@ -48,42 +62,43 @@
 
         <!-- 0: default 
         ---------------------------------------------------- -->
-        {#if calendarState === 0}
+        {#if menuState === 0}
             <DefaultMenu 
-                setCalendarState={setCalendarState} 
+                setMenuState={setMenuState} 
                 calendarId={calendarId}
             />
         
         <!-- 1: shopping list
         ---------------------------------------------------- -->
-        {:else if calendarState === 1}
+        {:else if menuState === 1}
             <ShoppingList
-                setCalendarState={setCalendarState}
+                setMenuState={setMenuState}
                 calendarId={calendarId}
             />
         
         <!-- 2: add event
         ---------------------------------------------------- -->
-        {:else if calendarState === 2}
+        {:else if menuState === 2}
             <AddEvent
-                setCalendarState={setCalendarState}
+                setMenuState={setMenuState}
+                calendarId={calendarId}
             />
             
 
         <!-- 3: change password
         ---------------------------------------------------- -->
-        {:else if calendarState === 3}
+        {:else if menuState === 3}
             <ChangePassword 
-                setCalendarState={setCalendarState} 
+                setMenuState={setMenuState} 
             />
 
 
         <!-- 4: edit calendar
         ---------------------------------------------------- -->
-        {:else if calendarState === 4}
+        {:else if menuState === 4}
             <EditCalendar 
                 calendarId={calendarId}
-                setCalendarState={setCalendarState}
+                setMenuState={setMenuState}
             />
 
         {/if}
@@ -93,9 +108,9 @@
     -------------------------------------------------------- -->
     <div class="calendar-box">
         <Calendar 
-            bind:this={ec}
+            bind:this={calendar}
             plugins={[TimeGrid]}
-            {options} 
+            options={options} 
         /> 
     </div>
 </div>

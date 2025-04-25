@@ -1,7 +1,7 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { auth, db } from "$lib/firebase.js";
+    import { auth, db, addUnsub } from "$lib/firebase.js";
     import { doc, onSnapshot } from "firebase/firestore";
 
     const props = $props();
@@ -11,6 +11,8 @@
         doc(db, "calendars", props.calendarId),
         (doc) => { calendarName = doc.data().name }
     );
+
+    addUnsub(unsub);
 </script>
 
 
@@ -22,11 +24,11 @@
     <h1>{calendarName}</h1>
 
     <div>
-        <button class="header-button" onclick={ () => props.setCalendarState(1) }>
+        <button class="header-button" onclick={ () => props.setMenuState(1) }>
             <img src="/icons/shopping-cart.png" alt="shopping cart icon">
         </button>
 
-        <button class="header-button" onclick={ () => props.setCalendarState(2) }>
+        <button class="header-button" onclick={ () => props.setMenuState(2) }>
             <img src="/icons/plus.png" alt="shopping cart icon">
         </button>
     </div>

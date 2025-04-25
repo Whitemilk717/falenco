@@ -1,7 +1,7 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { db } from "$lib/firebase.js";
+    import { db, addUnsub } from "$lib/firebase.js";
     import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
     const props = $props();
@@ -13,6 +13,8 @@
         docRef,
         (doc) => { items = doc.data().shoppingList }
     );
+
+    addUnsub(unsub);
 
     async function addItem() {
         await updateDoc(
@@ -34,13 +36,13 @@
 
 <!-- HTML section 
 ------------------------------------------------------------ -->
-<div class="shopping-div">
+<div class="overflow-div">
     <p>Lista della spesa:<p>
     <ul>
         {#each items as item}
             <li>
-                <div class="shopping-item">
-                    {item}
+                <div class="text-and-button-in-row">
+                    <p>{item}</p>
 
                     <button class="shopping-item-button" onclick={ () => removeItem(item) }>
                         <img src="/icons/cross.png" alt="cross icon">
@@ -57,5 +59,5 @@
 
 <div class="menu-buttons-box">
     <button class="menu-green-button" type="submit" form="add-item-form">Aggiungi prodotto</button>
-    <button class="menu-red-button" onclick={ () => props.setCalendarState(0) }>Esci</button>
+    <button class="menu-red-button" onclick={ () => props.setMenuState(0) }>Esci</button>
 </div>

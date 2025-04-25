@@ -29,7 +29,8 @@
                 name: calendarName, 
                 maxMembersNumber: maxMembersNumber, 
                 members: [auth.currentUser.email],
-                shoppingList: []
+                shoppingList: [],
+                events: []
             }
         );
 
