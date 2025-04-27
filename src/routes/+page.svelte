@@ -5,18 +5,20 @@
     import { auth } from "$lib/firebase";
     import { signInWithEmailAndPassword } from "firebase/auth";
 
+
     /* service worker registration
     -------------------------------------------------------- */
-    if ("serviceWorker" in navigator) {                                             // true: the browser supports service workers
+    if ("serviceWorker" in navigator) {                                         // true: the browser supports service workers
         navigator.serviceWorker
-            .register("/service-worker.js", { type: "module" })                     // "type: module" is required for manual service workers
+            .register("/service-worker.js", { type: "module" })                 // "type: module" is required for manual service workers
             .then(serviceWorker => {
                 console.log("Service Worker registered: ", serviceWorker);
             })
             .catch(error => {
-                console.error("Error registering the Service Worker: ", error);
+                console.error("Error registering the Service Worker: ", error); 
             })
     }
+
 
     /* sign in function
     -------------------------------------------------------- */
@@ -40,6 +42,7 @@
             })
     }
 </script>
+
 
 
 <!-- HTML section 

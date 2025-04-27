@@ -9,13 +9,18 @@
     let newItem = $state("");
     const docRef = doc(db, "calendars", props.calendarId);
 
+
+    /* continuous updating of the shopping list
+    -------------------------------------------------------- */
     const unsub = onSnapshot(
         docRef,
         (doc) => { items = doc.data().shoppingList }
     );
-
     addUnsub(unsub);
 
+
+    /* function to add an item to the shopping list
+    -------------------------------------------------------- */
     async function addItem() {
         await updateDoc(
             docRef,
@@ -25,6 +30,9 @@
         newItem = "";
     }
 
+
+    /* function to remove an item to the shopping list
+    -------------------------------------------------------- */
     async function removeItem(itemToRemove) {
         await updateDoc(
             docRef,
@@ -32,6 +40,7 @@
         );
     }
 </script>
+
 
 
 <!-- HTML section 
@@ -52,7 +61,7 @@
         {/each}
     </ul>
 
-    <form class="menu-input-box" id="add-item-form" onsubmit={() => addItem()}>
+    <form class="menu-centered-box" id="add-item-form" onsubmit={() => addItem()}>
         <input class="menu-input" type="text" bind:value={newItem} placeholder="Nuovo prodotto" required><br>
     </form>
 </div>

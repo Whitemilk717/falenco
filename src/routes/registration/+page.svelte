@@ -5,10 +5,12 @@
     import { auth } from "$lib/firebase";
     import { createUserWithEmailAndPassword } from "firebase/auth";
 
+
     /* input declarations
     -------------------------------------------------------- */
     let email = "";
     let password = "";
+
 
     /* user creation
     -------------------------------------------------------- */
@@ -33,6 +35,7 @@
             })
     }
 </script>
+
 
 
 <!-- HTML section 

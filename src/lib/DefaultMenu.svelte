@@ -17,13 +17,14 @@
 </script>
 
 
+
 <!-- HTML section 
 ------------------------------------------------------------ -->
 <div class="menu-div">
     <p>Membri:</p>
     <ul>
         {#each members as member}
-            <li>{member}</li>
+            <li style="color:{member.color};">{member.email}</li>
         {/each}
     </ul>
 </div>

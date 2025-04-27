@@ -2,14 +2,17 @@
 ------------------------------------------------------------ -->
 <script>
     import { goto } from "$app/navigation";
-    import { auth, db } from "$lib/firebase";
+    import { auth, db } from "$lib/firebase.js";
+    import { getRandomColor } from "$lib/getRandomColor.js";
     import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 
     let calendarName;
     let maxMembersNumber;
 
-    async function createCalendar() {
 
+    /* function to create calendar
+    -------------------------------------------------------- */
+    async function createCalendar() {
         const q = query(
             collection(db, "calendars"),
             where("name", "==", calendarName)
@@ -28,7 +31,10 @@
             { 
                 name: calendarName, 
                 maxMembersNumber: maxMembersNumber, 
-                members: [auth.currentUser.email],
+                members: [{
+                    email: auth.currentUser.email,
+                    color: getRandomColor()
+                }],
                 shoppingList: [],
                 events: []
             }
@@ -38,6 +44,7 @@
         goto("/calendar-selection")
     }
 </script>
+
 
 
 <!-- HTML section 

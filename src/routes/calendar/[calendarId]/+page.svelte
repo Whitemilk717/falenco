@@ -2,40 +2,56 @@
 ------------------------------------------------------------ -->
 <script>
     import { page } from "$app/state";
-    import { db, addUnsub } from "$lib/firebase.js"
     import { goto } from "$app/navigation";
     import Header from "$lib/Header.svelte";
     import AddEvent from "$lib/AddEvent.svelte";
+    import ShowEvent from "$lib/ShowEvent.svelte";
+    import { db, addUnsub } from "$lib/firebase.js";
     import DefaultMenu from "$lib/DefaultMenu.svelte";
     import ShoppingList from "$lib/ShoppingList.svelte";
     import EditCalendar from "$lib/EditCalendar.svelte";
-    import ChangePassword from "$lib/ChangePassword.svelte";
-    import { Calendar, TimeGrid } from "@event-calendar/core";
     import { doc, onSnapshot } from "firebase/firestore";
+    import ChangePassword from "$lib/ChangePassword.svelte";
+    import { Calendar, TimeGrid } from "@event-calendar/svelte";
 
-
-    let menuState = $state(0);                      // determines what the menu shows
-    let events = $state("");
-    let calendarId = $state(page.params.calendarId);
+    let menuState = $state(0);                          // determines what the menu shows
+    let eventInfos = $state("");
+    const calendarId = page.params.calendarId;
     const docRef = doc(db, "calendars", calendarId);
+
 
     /* calendar options and component instance
     -------------------------------------------------------- */
     let calendar = $state();
     let options = $state({
         view: "timeGridWeek",
-        events: []
+        events: [],
+        eventClick: (info) => {
+            eventInfos = info;
+            setMenuState(5);        // 5: show event
+        }
     });
+
 
     /* firestore event synchronization
     -------------------------------------------------------- */
+    /* NOTE:
+     * by removing and adding each event I capture new events, changes and eliminations
+     */
     const unsub = onSnapshot(
         docRef,
         (doc) => {
-            options.events = doc.data().events;
+            calendar.getEvents().forEach(event => {
+                calendar.removeEventById(event.id);
+            })
+
+            doc.data().events.forEach(event => {
+                calendar.addEvent(event);  
+            });
         }
     );
     addUnsub(unsub);
+
 
     /* function to change menuState
     -------------------------------------------------------- */
@@ -45,9 +61,11 @@
 </script>
 
 
+
 <!-- HTML section 
 ------------------------------------------------------------ -->
 <div class="app-grid">
+
 
     <!-- header
     -------------------------------------------------------- -->
@@ -56,9 +74,11 @@
         setMenuState={setMenuState}
     />
 
+
     <!-- menu 
     -------------------------------------------------------- -->
     <div class="menu-box">
+
 
         <!-- 0: default 
         ---------------------------------------------------- -->
@@ -68,6 +88,7 @@
                 calendarId={calendarId}
             />
         
+
         <!-- 1: shopping list
         ---------------------------------------------------- -->
         {:else if menuState === 1}
@@ -76,6 +97,7 @@
                 calendarId={calendarId}
             />
         
+
         <!-- 2: add event
         ---------------------------------------------------- -->
         {:else if menuState === 2}
@@ -100,9 +122,19 @@
                 calendarId={calendarId}
                 setMenuState={setMenuState}
             />
+            
 
+        <!-- 5: show event
+        ---------------------------------------------------- -->
+        {:else if menuState === 5}
+            <ShowEvent
+                calendarId={calendarId}
+                setMenuState={setMenuState}
+                eventInfos={eventInfos}
+            />
         {/if}
     </div>
+    
     
     <!-- calendar
     -------------------------------------------------------- -->
