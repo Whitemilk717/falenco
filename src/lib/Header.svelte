@@ -2,17 +2,23 @@
 ------------------------------------------------------------ -->
 <script>
     import { auth, db, addUnsub } from "$lib/firebase.js";
+    import { onAuthStateChanged } from "firebase/auth";
     import { doc, onSnapshot } from "firebase/firestore";
 
     const props = $props();
     let calendarName = $state("");
 
-    const unsub = onSnapshot(
-        doc(db, "calendars", props.calendarId),
-        (doc) => { calendarName = doc.data().name }
-    );
 
-    addUnsub(unsub);
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const unsub = onSnapshot(
+                doc(db, "calendars", props.calendarId),
+                (doc) => { calendarName = doc.data().name }
+            );
+
+            addUnsub(unsub);
+        }
+    })
 </script>
 
 

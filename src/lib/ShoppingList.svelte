@@ -2,21 +2,26 @@
 ------------------------------------------------------------ -->
 <script>
     import { db, addUnsub } from "$lib/firebase.js";
+    import { onAuthStateChanged } from "firebase/auth";
     import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
     const props = $props();
-    let items = $state("");
+    let items = $state([]);
     let newItem = $state("");
     const docRef = doc(db, "calendars", props.calendarId);
 
 
     /* continuous updating of the shopping list
     -------------------------------------------------------- */
-    const unsub = onSnapshot(
-        docRef,
-        (doc) => { items = doc.data().shoppingList }
-    );
-    addUnsub(unsub);
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const unsub = onSnapshot(
+                docRef,
+                (doc) => { items = doc.data().shoppingList }
+            );
+            addUnsub(unsub);
+        }
+    })
 
 
     /* function to add an item to the shopping list

@@ -1,6 +1,7 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
+    import { onAuthStateChanged } from "firebase/auth";
     import { auth, db, addUnsub } from "$lib/firebase.js";
     import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
     
@@ -22,11 +23,16 @@
     
     /* continuous updating of possible members to invite
     -------------------------------------------------------- */
-    const unsub = onSnapshot(
-        docRef,
-        (doc) => { members = doc.data().members }
-    );
-    addUnsub(unsub);
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const unsub = onSnapshot(
+                docRef,
+                (doc) => { members = doc.data().members }
+            );
+            addUnsub(unsub);
+        }
+    })
+
 
 
     /* function to update event in db

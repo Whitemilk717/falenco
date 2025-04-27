@@ -1,23 +1,43 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
+    import { onMount } from "svelte";
     import { page } from "$app/state";
-    import { goto } from "$app/navigation";
     import Header from "$lib/Header.svelte";
     import AddEvent from "$lib/AddEvent.svelte";
+    import { FirebaseError } from "firebase/app";
     import ShowEvent from "$lib/ShowEvent.svelte";
-    import { db, addUnsub } from "$lib/firebase.js";
     import DefaultMenu from "$lib/DefaultMenu.svelte";
+    import { onAuthStateChanged } from "firebase/auth";
     import ShoppingList from "$lib/ShoppingList.svelte";
     import EditCalendar from "$lib/EditCalendar.svelte";
     import { doc, onSnapshot } from "firebase/firestore";
+    import { db, addUnsub, auth } from "$lib/firebase.js";
     import ChangePassword from "$lib/ChangePassword.svelte";
     import { Calendar, TimeGrid } from "@event-calendar/svelte";
 
     let menuState = $state(0);                          // determines what the menu shows
     let eventInfos = $state("");
+    let notificationsAllowed = false;                   // guard for sending notifications
+    let timeoutIds = [];                             // array containing the timeout ids for notifications
     const calendarId = page.params.calendarId;
     const docRef = doc(db, "calendars", calendarId);
+
+
+    /* request to be able to send notifications
+    -------------------------------------------------------- */
+    onMount(() => {
+        if (!("Notification" in window)) {
+            alert("Questo browser non supporta le notifiche!")
+        } else {
+            Notification.requestPermission()
+                .then((permission) => {
+                    if (permission === "granted") {
+                        notificationsAllowed = true;
+                    }
+                })
+        }
+    })
 
 
     /* calendar options and component instance
@@ -33,24 +53,51 @@
     });
 
 
-    /* firestore event synchronization
+    /* FireStore event synchronization, notification preparation
     -------------------------------------------------------- */
     /* NOTE:
      * by removing and adding each event I capture new events, changes and eliminations
      */
-    const unsub = onSnapshot(
-        docRef,
-        (doc) => {
-            calendar.getEvents().forEach(event => {
-                calendar.removeEventById(event.id);
-            })
+     onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const unsub = onSnapshot(
+                docRef,
+                (doc) => {
+                    calendar.getEvents().forEach(event => {
+                        calendar.removeEventById(event.id);
+                    })
 
-            doc.data().events.forEach(event => {
-                calendar.addEvent(event);  
-            });
+                    timeoutIds.forEach(id => clearTimeout(id)); // removing timeouts
+                    timeoutIds = [];
+
+                    doc.data().events.forEach(event => {    
+                        calendar.addEvent(event);           // adding event to calendar
+
+                        const eventTime = new Date(event.start).getTime();                  // eventTime in milliseconds
+                        const currentTime = new Date().getTime();                           // currentTime in milliseconds
+                        const timeUntilEvent = (eventTime - currentTime) - (60*60*1000);    // 1h = 60m * 60s * 1000ms.
+
+                        
+                        if ( (timeUntilEvent > 0) && notificationsAllowed ) {
+                            timeoutIds.push(setTimeout(() => { 
+                                const notification = new Notification(
+                                    "FaLenCo",
+                                    {
+                                        lang: "it",
+                                        body: `L'evento ${event.title} inizierà tra un'ora!`,
+                                        icon: "/icons/icon-32x32.png"
+                                    }
+                                )}, timeUntilEvent
+                            ));
+                        }
+
+                    });
+
+                },
+            );
+            addUnsub(unsub);
         }
-    );
-    addUnsub(unsub);
+    })
 
 
     /* function to change menuState
