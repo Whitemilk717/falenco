@@ -64,35 +64,53 @@
                 docRef,
                 (doc) => {
                     calendar.getEvents().forEach(event => {
-                        calendar.removeEventById(event.id);
-                    })
+                        calendar.removeEventById(event.id); // removal of any event from the calendar
+                    });
 
-                    timeoutIds.forEach(id => clearTimeout(id)); // removing timeouts
+                    timeoutIds.forEach(id => clearTimeout(id)); // removal of every timeout
                     timeoutIds = [];
 
                     doc.data().events.forEach(event => {    
-                        calendar.addEvent(event);           // adding event to calendar
+                        calendar.addEvent(event);           // adding every event to the calendar
 
                         const eventTime = new Date(event.start).getTime();                  // eventTime in milliseconds
                         const currentTime = new Date().getTime();                           // currentTime in milliseconds
                         const timeUntilEvent = (eventTime - currentTime) - (60*60*1000);    // 1h = 60m * 60s * 1000ms.
 
+                        /* a notification is sent only:
+                         * - to the event owner
+                         * - to each invited member
+                         * - if the time remaining to the event minus 1 h is positive
+                         * - if notifications have been allowed
+                         */
+
+                        console.log("-----");
+                        console.log(auth.currentUser.email);
+                        console.log(event.owner.email);
+                        console.log((auth.currentUser.email === event.owner.email));
                         
-                        if ( (timeUntilEvent > 0) && notificationsAllowed ) {
-                            timeoutIds.push(setTimeout(() => { 
-                                const notification = new Notification(
-                                    "FaLenCo",
-                                    {
-                                        lang: "it",
-                                        body: `L'evento ${event.title} inizierà tra un'ora!`,
-                                        icon: "/icons/icon-32x32.png"
-                                    }
-                                )}, timeUntilEvent
-                            ));
+                        console.log("-----");
+                        event.guests.forEach((guest) => console.log(guest.email));
+                        console.log(auth.currentUser.email);
+                        console.log(event.guests.some((guest) => guest.email === auth.currentUser.email));
+                        
+                        console.log("-----");
+                        if ( (auth.currentUser.email === event.owner.email) || (event.guests.some((guest) => guest.email === auth.currentUser.email) ) ) {
+                            if ( (timeUntilEvent > 0) && notificationsAllowed ) {
+                                timeoutIds.push(setTimeout(() => { 
+                                    const notification = new Notification(
+                                        "FaLenCo",
+                                        {
+                                            lang: "it",
+                                            body: `Hey ${auth.currentUser.email}, l'evento ${event.title} inizierà tra un'ora!`,
+                                            icon: "/icons/icon-32x32.png"
+                                        }
+                                    )}, timeUntilEvent
+                                ));
+                            }
                         }
 
                     });
-
                 },
             );
             addUnsub(unsub);

@@ -96,8 +96,9 @@
         }
 
         const docData = (await getDoc(docRef)).data();
-        const updatedEvents = docData.events.filter(event =>    // removal of the event
-            event.id !== modifiedEvent.id);
+        const updatedEvents = docData.events.filter(
+            event => event.id !== modifiedEvent.id      // removal of the event
+        );
 
         await updateDoc(
             docRef,
