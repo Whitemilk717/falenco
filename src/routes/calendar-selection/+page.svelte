@@ -54,7 +54,7 @@
 <form class="main-box" onsubmit={ () => checkCalendar() }>
     <h1 class="main-title">FaLenCo</h1>
 
-    <p class="welcome-text">
+    <p class="center-paragraph">
         Benvenuto! 
         <br>
         Quale calendario vuoi visualizzare?
@@ -67,5 +67,5 @@
         <button type="submit" class="small-green-button">Conferma</button>
     </div>
 
-    <p class="first-time">Prima volta? <a class="link" href="/calendar-creation">Crea un calendario</a></p>
+    <p class="small-text">Prima volta? <a class="link" href="/calendar-creation">Crea un calendario</a></p>
 </form>

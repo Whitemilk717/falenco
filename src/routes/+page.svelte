@@ -55,5 +55,6 @@
 
     <button type="submit" class="big-green-button">Accedi</button>
 
-    <p class="first-time">Prima volta? <a class="link" href="/registration">Crea un account</a></p>
+    <p class="small-text">Prima volta? <a class="link" href="/registration">Crea un account</a></p>
+    <p class="small-text">Password dimenticata? <a class="link" href="/password-recover">Recupera password</a></p>
 </form>
