@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@event-calendar/svelte": "^5.0.0-alpha.3",
-		"firebase": "^11.6.0"
+		"firebase": "^11.6.0",
+		"leaflet": "^1.9.4"
 	}
 }
