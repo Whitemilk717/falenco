@@ -1,44 +1,27 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import { page } from "$app/state";
     import Header from "$lib/Header.svelte";
     import AddEvent from "$lib/AddEvent.svelte";
     import { FirebaseError } from "firebase/app";
     import ShowEvent from "$lib/ShowEvent.svelte";
     import DefaultMenu from "$lib/DefaultMenu.svelte";
-    import { onAuthStateChanged } from "firebase/auth";
     import ShoppingList from "$lib/ShoppingList.svelte";
     import EditCalendar from "$lib/EditCalendar.svelte";
     import { doc, onSnapshot } from "firebase/firestore";
-    import { db, addUnsub, auth } from "$lib/firebase.js";
+    import { db, auth, addUnsub } from "$lib/firebase.js";
     import ChangePassword from "$lib/ChangePassword.svelte";
     import { Calendar, TimeGrid } from "@event-calendar/svelte";
 
     let menuState = $state(0);                          // determines what the menu shows
     let eventInfos = $state("");
     let notificationsAllowed = false;                   // guard for sending notifications
-    let timeoutIds = [];                             // array containing the timeout ids for notifications
+    let timeoutIds = [];                                // array containing the timeout ids for notifications
     const calendarId = page.params.calendarId;
     const docRef = doc(db, "calendars", calendarId);
-
-
-    /* request to be able to send notifications
-    -------------------------------------------------------- */
-    onMount(() => {
-        if (!("Notification" in window)) {
-            alert("Questo browser non supporta le notifiche!")
-        } else {
-            Notification.requestPermission()
-                .then((permission) => {
-                    if (permission === "granted") {
-                        notificationsAllowed = true;
-                    }
-                })
-        }
-    })
-
+    
 
     /* calendar options and component instance
     -------------------------------------------------------- */
@@ -53,68 +36,71 @@
     });
 
 
-    /* FireStore event synchronization, notification preparation
+    /* onMount routine: notifications and event synchronization
     -------------------------------------------------------- */
-    /* NOTE:
-     * by removing and adding each event I capture new events, changes and eliminations
-     */
-     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const unsub = onSnapshot(
-                docRef,
-                (doc) => {
-                    calendar.getEvents().forEach(event => {
-                        calendar.removeEventById(event.id); // removal of any event from the calendar
-                    });
+    onMount(() => {
 
-                    timeoutIds.forEach(id => clearTimeout(id)); // removal of every timeout
-                    timeoutIds = [];
-
-                    doc.data().events.forEach(event => {    
-                        calendar.addEvent(event);           // adding every event to the calendar
-
-                        const eventTime = new Date(event.start).getTime();                  // eventTime in milliseconds
-                        const currentTime = new Date().getTime();                           // currentTime in milliseconds
-                        const timeUntilEvent = (eventTime - currentTime) - (60*60*1000);    // 1h = 60m * 60s * 1000ms.
-
-                        /* a notification is sent only:
-                         * - to the event owner
-                         * - to each invited member
-                         * - if the time remaining to the event minus 1 h is positive
-                         * - if notifications have been allowed
-                         */
-
-                        console.log("-----");
-                        console.log(auth.currentUser.email);
-                        console.log(event.owner.email);
-                        console.log((auth.currentUser.email === event.owner.email));
-                        
-                        console.log("-----");
-                        event.guests.forEach((guest) => console.log(guest.email));
-                        console.log(auth.currentUser.email);
-                        console.log(event.guests.some((guest) => guest.email === auth.currentUser.email));
-                        
-                        console.log("-----");
-                        if ( (auth.currentUser.email === event.owner.email) || (event.guests.some((guest) => guest.email === auth.currentUser.email) ) ) {
-                            if ( (timeUntilEvent > 0) && notificationsAllowed ) {
-                                timeoutIds.push(setTimeout(() => { 
-                                    const notification = new Notification(
-                                        "FaLenCo",
-                                        {
-                                            lang: "it",
-                                            body: `Hey ${auth.currentUser.email}, l'evento ${event.title} inizierà tra un'ora!`,
-                                            icon: "/icons/icon-32x32.png"
-                                        }
-                                    )}, timeUntilEvent
-                                ));
-                            }
-                        }
-
-                    });
-                },
-            );
-            addUnsub(unsub);
+        /* request to be able to send notifications
+        ---------------------------------------------------- */
+        if (!("Notification" in window)) {
+            alert("Questo browser non supporta le notifiche!")
+        } else {
+            Notification.requestPermission()
+                .then((permission) => {
+                    if (permission === "granted") {
+                        notificationsAllowed = true;
+                    }
+                })
         }
+
+        /* FireStore event synchronization, notification preparation
+        ---------------------------------------------------- */
+        /* NOTES:
+         * by removing and adding each event I capture new events, changes and eliminations
+         */
+        const unsub = onSnapshot(
+            docRef,
+            (doc) => {
+                calendar.getEvents().forEach(event => {
+                    calendar.removeEventById(event.id); // removal of any event from the calendar
+                });
+
+                timeoutIds.forEach(id => clearTimeout(id)); // removal of every timeout
+                timeoutIds = [];
+
+                doc.data().events.forEach(event => {    
+                    calendar.addEvent(event);           // adding every event to the calendar
+
+                    const eventTime = new Date(event.start).getTime();                  // eventTime in milliseconds
+                    const currentTime = new Date().getTime();                           // currentTime in milliseconds
+                    const timeUntilEvent = (eventTime - currentTime) - (60*60*1000);    // 1h = 60m * 60s * 1000ms.
+
+                    /* a notification is sent only:
+                        * - to the event owner
+                        * - to each invited member
+                        * - when the time remaining to the event is 1h
+                        * - if notifications have been allowed
+                        */
+                    if ( (auth.currentUser.email === event.owner.email) || (event.guests.some((guest) => guest.email === auth.currentUser.email) ) ) {
+                        if ( (timeUntilEvent > 0) && notificationsAllowed ) {
+                            timeoutIds.push(setTimeout(() => { 
+                                const notification = new Notification(
+                                    "FaLenCo",
+                                    {
+                                        lang: "it",
+                                        body: `Hey ${auth.currentUser.email}, l'evento ${event.title} inizierà tra un'ora!`,
+                                        icon: "/icons/icon-32x32.png"
+                                    }
+                                )}, timeUntilEvent
+                            ));
+                        }
+                    }
+
+                });
+            },
+            (error) => {console.log("Calendar : ", error)}
+        );
+        addUnsub(unsub);
     })
 
 

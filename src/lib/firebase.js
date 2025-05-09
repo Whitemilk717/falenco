@@ -19,9 +19,11 @@ const db = getFirestore(app);
 
 let unsubs = [];    // array containing all firestore subscriptions
 
+
 function addUnsub(unsub) {
     unsubs.push(unsub);
 }
+
 
 function disconnect() {
     unsubs.forEach(unsub => {

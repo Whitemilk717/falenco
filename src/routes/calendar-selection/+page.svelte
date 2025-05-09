@@ -27,7 +27,7 @@
         )
 
         if (isAlreadyMember === undefined) {
-            if (calendarData.membersNumber === calendarData.members.length) {
+            if (calendarData.maxMembersNumber === calendarData.members.length) {
                 alert("Il calendario ha raggiunto il massimo numero di membri");
                 calendarName = "";
                 return;

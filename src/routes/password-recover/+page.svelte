@@ -14,6 +14,7 @@
         sendPasswordResetEmail(auth, email)
             .then(() => {
                 alert("Email inviata con successo!");
+                email = "";
             })
             .catch((error) => {
                 console.log(error);

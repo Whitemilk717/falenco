@@ -1,23 +1,22 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { auth, db, addUnsub } from "$lib/firebase.js";
-    import { onAuthStateChanged } from "firebase/auth";
+    import { addUnsub, auth, db } from "$lib/firebase.js";
     import { doc, onSnapshot } from "firebase/firestore";
+    import { onDestroy, onMount } from "svelte";
 
     const props = $props();
     let calendarName = $state("");
 
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const unsub = onSnapshot(
-                doc(db, "calendars", props.calendarId),
-                (doc) => { calendarName = doc.data().name }
-            );
-
-            addUnsub(unsub);
-        }
+    // getting the calendar name
+    onMount(() => {
+        const unsub = onSnapshot(
+            doc(db, "calendars", props.calendarId),
+            (doc) => { calendarName = doc.data().name },
+            (error) => {console.log("Header : ", error)}
+        );
+        addUnsub(unsub);
     })
 </script>
 

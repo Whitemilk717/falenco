@@ -35,10 +35,9 @@
                     alert("Email e/o password errati. Riprovare!");
                     email = "";
                     password = "";
+                    return;
                 }
-                else {
-                    console.log(error);
-                }
+                console.log(error);
             })
     }
 </script>

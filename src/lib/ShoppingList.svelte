@@ -1,10 +1,11 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { db, addUnsub } from "$lib/firebase.js";
-    import { onAuthStateChanged } from "firebase/auth";
+    import { addUnsub, db } from "$lib/firebase.js";
     import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+    import { onDestroy, onMount } from "svelte";
 
+    let unsub;
     const props = $props();
     let items = $state([]);
     let newItem = $state("");
@@ -13,13 +14,19 @@
 
     /* continuous updating of the shopping list
     -------------------------------------------------------- */
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const unsub = onSnapshot(
-                docRef,
-                (doc) => { items = doc.data().shoppingList }
-            );
-            addUnsub(unsub);
+    onMount(() => {
+        unsub = onSnapshot(
+            docRef,
+            (doc) => { items = doc.data().shoppingList },
+            (error) => {console.log("Shopping list : ", error)}
+        );
+        addUnsub(unsub);
+    });
+
+
+    onDestroy(() => {
+        if(unsub) {
+            unsub();
         }
     })
 
@@ -31,7 +38,6 @@
             docRef,
             { shoppingList: arrayUnion(newItem) }   // added to shoppingList 
         );
-
         newItem = "";
     }
 
@@ -73,5 +79,5 @@
 
 <div class="menu-buttons-box">
     <button class="menu-green-button" type="submit" form="add-item-form">Aggiungi prodotto</button>
-    <button class="menu-red-button" onclick={ () => props.setMenuState(0) }>Esci</button>
+    <button class="menu-red-button" onclick={ () => {props.setMenuState(0)} }>Esci</button>
 </div>

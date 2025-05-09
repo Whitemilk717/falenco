@@ -1,38 +1,127 @@
 <!-- script section 
 ------------------------------------------------------------ -->
 <script>
-    import { onAuthStateChanged } from "firebase/auth";
-    import { auth, db, addUnsub } from "$lib/firebase.js";
+    import { onDestroy, onMount } from "svelte";
+    import { addUnsub, auth, db } from "$lib/firebase.js";
     import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
     
+    let unsub;
+    let newEvent;
     const props = $props();
     let members = $state("");                               // users who can be invited to the event
     let modifiedEvent = $state({});                         // variable containing the clicked event data
     let eventToDelete = $state({});                         // variable containing the unchanged data
     const docRef = doc(db, "calendars", props.calendarId);  // reference to the current calendar
     
-    
-    /* function to get event data from db
+
+    /* map attributes
     -------------------------------------------------------- */
-    async function getEventData() {
-        const docData = (await getDoc(docRef)).data();                                          // await cannot be used except inside async functions
-        modifiedEvent = docData.events.find((event) => event.id === props.eventInfos.event.id); // get clicked event data
-    }
-    getEventData();
+    let map;
+    let marker;
+    let firstLoad = true;   // flag to indicate that the map view should not be changed the first time
     
-    
-    /* continuous updating of possible members to invite
+
+    /* map creation and event recovery
     -------------------------------------------------------- */
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const unsub = onSnapshot(
-                docRef,
-                (doc) => { members = doc.data().members }
-            );
-            addUnsub(unsub);
+    onMount(async () => {
+        unsub = onSnapshot(
+            docRef,
+            (doc) => {
+                const docData = doc.data();
+                newEvent = docData.events.find(
+                    (event) => event.id === props.eventInfos.event.id   // get clicked event data
+                )
+
+                if (newEvent) {                                                 // change the data displayed only if the event has not been deleted
+                    modifiedEvent = newEvent;
+                    if (firstLoad) {
+                        firstLoad = !firstLoad;                                 // on first load, map creation automatically changes the view
+                    }
+                    else {
+                        changeView(modifiedEvent.lat, modifiedEvent.lng);
+                    }
+                }
+                else {
+                    if (auth.currentUser.email != modifiedEvent.owner.email) {
+                        alert("L'evento è stato cancellato dal suo proprietario");
+                        props.setMenuState(0);
+                    }
+                }
+
+                /* continuous updating of possible members to invite
+                -------------------------------------------------------- */
+                members = doc.data().members
+            },
+            (error) => {console.log("Show event : ", error)}
+        );
+        addUnsub(unsub);
+
+        
+        /* map creation
+        -------------------------------------------------------- */
+        let L = await import("leaflet");
+        await import ("leaflet/dist/leaflet.css");
+
+        map = L.map("map")                          // instantiates a map object given the DOM ID of a <div> element
+            .setView([43.720751, 10.408109], 17);   // sets the view of the map (geographical center and zoom). Returns "this"
+
+        L.tileLayer(                                                // used to load and display tile layers on the map
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+            { attribution: '© OpenStreetMap contributors' }
+        ).addTo(map);
+
+        map.on("click", changeViewOnClick); // map click handler registration
+
+        if(modifiedEvent.lat.length != 0) {
+            changeView(modifiedEvent.lat, modifiedEvent.lng);
+        }
+    });
+
+
+    onDestroy(() => {
+        if(unsub) {
+            unsub();
         }
     })
 
+
+    /* function to add a marker after a click
+    -------------------------------------------------------- */
+    function changeViewOnClick(e) {
+        changeView(e.latlng.lat, e.latlng.lng);
+    }
+
+
+    /* function to add a marker after a click and center the view
+    -------------------------------------------------------- */
+    function changeView(lat, lng) {
+        if (marker) {
+            marker.remove();                        // removing the old marker
+        }
+        map.panTo([lat, lng]);                     // pans the map to a given center. Returns this
+        marker = L.marker([lat, lng]).addTo(map);  // adding a new marker
+
+        modifiedEvent.lat = lat;
+        modifiedEvent.lng = lng;
+    }
+
+
+    /* function to obtain the coordinates of the place entered by the user
+    -------------------------------------------------------- */
+    async function getCoordinates() {
+        await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&q=" + modifiedEvent.location)  // HTTP request to Nominatim
+            .then( (response) => response.json() )
+            .then ( (data) => {
+                if (data.length > 0) {                                                      // the answer is an array of objects
+                    const lat = data[0].lat;
+                    const lng = data[0].lon;
+                    changeView(lat, lng);
+                }
+                else {
+                    alert("Questo luogo non esiste. Riprova!");
+                }
+            });
+    }
 
 
     /* function to update event in db
@@ -119,7 +208,10 @@
     <form id="update-event-form" onsubmit={ () => updateEvent() }>
         <div class="menu-centered-box">
             <input class="menu-input" type="text" bind:value={modifiedEvent.title} placeholder="Nome evento" required><br>
+
             <input class="menu-input" type="text" bind:value={modifiedEvent.location} placeholder="Luogo"><br>
+            <div id="map"></div>
+            <button class="menu-button" type="button" onclick={() => getCoordinates()}>Cerca luogo</button>
 
             <div class="text-and-button-in-row">
                 <p>Tutto il giorno:</p>
@@ -167,5 +259,5 @@
 <div class="menu-buttons-box">
     <button class="menu-green-button" type="submit" form="update-event-form">Salva</button>
     <button class="menu-red-button" onclick={ () => deleteEvent() }>Elimina</button>
-    <button class="menu-red-button" onclick={ () => props.setMenuState(0) }>Annulla</button>
+    <button class="menu-red-button" onclick={ () => {props.setMenuState(0)} }>Annulla</button>
 </div>
