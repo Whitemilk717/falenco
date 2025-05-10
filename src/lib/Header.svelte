@@ -5,18 +5,29 @@
     import { doc, onSnapshot } from "firebase/firestore";
     import { onDestroy, onMount } from "svelte";
 
+    let unsub;
     const props = $props();
     let calendarName = $state("");
 
 
-    // getting the calendar name
+    /* getting the calendar name
+    -------------------------------------------------------- */
     onMount(() => {
-        const unsub = onSnapshot(
+        unsub = onSnapshot(
             doc(db, "calendars", props.calendarId),
             (doc) => { calendarName = doc.data().name },
             (error) => {console.log("Header : ", error)}
         );
         addUnsub(unsub);
+    })
+
+
+    /* onDestroy function
+    -------------------------------------------------------- */
+    onDestroy(() => {
+        if(unsub) {
+            unsub();
+        }
     })
 </script>
 

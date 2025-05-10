@@ -15,6 +15,7 @@
     import ChangePassword from "$lib/ChangePassword.svelte";
     import { Calendar, TimeGrid } from "@event-calendar/svelte";
 
+    let unsub;
     let menuState = $state(0);                          // determines what the menu shows
     let eventInfos = $state("");
     let notificationsAllowed = false;                   // guard for sending notifications
@@ -58,7 +59,7 @@
         /* NOTES:
          * by removing and adding each event I capture new events, changes and eliminations
          */
-        const unsub = onSnapshot(
+        unsub = onSnapshot(
             docRef,
             (doc) => {
                 calendar.getEvents().forEach(event => {
@@ -101,6 +102,15 @@
             (error) => {console.log("Calendar : ", error)}
         );
         addUnsub(unsub);
+    })
+
+
+    /* onDestroy function
+    -------------------------------------------------------- */
+    onDestroy(() => {
+        if(unsub) {
+            unsub();
+        }
     })
 
 

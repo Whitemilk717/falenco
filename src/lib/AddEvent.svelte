@@ -56,6 +56,9 @@
         map.on("click", changeViewOnClick); // map click handler registration
     });
 
+
+    /* onDestroy function
+    -------------------------------------------------------- */
     onDestroy(() => {
         if(unsub) {
             unsub();
